@@ -2,9 +2,28 @@ function ScoreForm({ onAdd }) {
   const [date, setDate] = React.useState('');
   const [score, setScore] = React.useState('');
   return (
-    <form onSubmit={e => { e.preventDefault(); onAdd({ date, score: parseInt(score, 10) }); setDate(''); setScore(''); }}>
-      <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
-      <input type="number" value={score} onChange={e => setScore(e.target.value)} required placeholder="Score" />
+    <form
+      className="score-form"
+      onSubmit={e => {
+        e.preventDefault();
+        onAdd({ date, score: parseInt(score, 10) });
+        setDate('');
+        setScore('');
+      }}
+    >
+      <input
+        type="date"
+        value={date}
+        onChange={e => setDate(e.target.value)}
+        required
+      />
+      <input
+        type="number"
+        value={score}
+        onChange={e => setScore(e.target.value)}
+        required
+        placeholder="Score"
+      />
       <button type="submit">Add</button>
     </form>
   );
@@ -12,9 +31,22 @@ function ScoreForm({ onAdd }) {
 
 function ScoreList({ scores }) {
   return (
-    <ul>
-      {scores.map((s, idx) => <li key={idx}>{s.date}: {s.score}</li>)}
-    </ul>
+    <table className="score-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {scores.map((s, idx) => (
+          <tr key={idx}>
+            <td>{s.date}</td>
+            <td>{s.score}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -25,10 +57,10 @@ function Metrics({ scores }) {
   const stddev = Math.sqrt(variance);
   const best = Math.max(...scores.map(s => s.score));
   return (
-    <div>
-      <p>Average: {avg.toFixed(2)}</p>
-      <p>Std Dev: {stddev.toFixed(2)}</p>
-      <p>Best Score: {best}</p>
+    <div className="metrics">
+      <div>Average: {avg.toFixed(2)}</div>
+      <div>Std Dev: {stddev.toFixed(2)}</div>
+      <div>Best Score: {best}</div>
     </div>
   );
 }
@@ -55,16 +87,19 @@ function App() {
 
   if (!username) {
     return (
-      <form onSubmit={submitName}>
-        <h1>Enter a unique username</h1>
-        <input
-          value={nameInput}
-          onChange={e => setNameInput(e.target.value)}
-          placeholder="Username"
-          required
-        />
-        <button type="submit">Enter</button>
-      </form>
+      <div className="container">
+        <form onSubmit={submitName}>
+          <h1>Enter a unique username</h1>
+          <input
+            className="text-input"
+            value={nameInput}
+            onChange={e => setNameInput(e.target.value)}
+            placeholder="Username"
+            required
+          />
+          <button type="submit">Enter</button>
+        </form>
+      </div>
     );
   }
   const addScore = async (entry) => {
@@ -80,7 +115,7 @@ function App() {
     }
   };
   return (
-    <div>
+    <div className="container">
       <h2>Hello {username}</h2>
       <ScoreForm onAdd={addScore} />
       <ScoreList scores={scores} />
