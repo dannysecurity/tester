@@ -34,14 +34,37 @@ function Metrics({ scores }) {
 }
 
 function App() {
-  const [name, setName] = React.useState('');
+  const [username, setUsername] = React.useState(null);
+  const [nameInput, setNameInput] = React.useState('');
   const [scores, setScores] = React.useState([]);
-  if (!name) {
+
+  const submitName = async (e) => {
+    e.preventDefault();
+    if (!nameInput) return;
+    setUsername(nameInput);
+    try {
+      const resp = await fetch(`/api/scores/${encodeURIComponent(nameInput)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        setScores(data);
+      }
+    } catch (err) {
+      console.error('Failed to load scores', err);
+    }
+  };
+
+  if (!username) {
     return (
-      <div>
-        <h1>Enter your name</h1>
-        <input value={name} onChange={e => setName(e.target.value)} />
-      </div>
+      <form onSubmit={submitName}>
+        <h1>Enter a unique username</h1>
+        <input
+          value={nameInput}
+          onChange={e => setNameInput(e.target.value)}
+          placeholder="Username"
+          required
+        />
+        <button type="submit">Enter</button>
+      </form>
     );
   }
   const addScore = async (entry) => {
@@ -50,7 +73,7 @@ function App() {
       await fetch('/api/scores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user: name, ...entry })
+        body: JSON.stringify({ user: username, ...entry })
       });
     } catch (e) {
       console.error('Failed to save', e);
@@ -58,7 +81,7 @@ function App() {
   };
   return (
     <div>
-      <h2>Hello {name}</h2>
+      <h2>Hello {username}</h2>
       <ScoreForm onAdd={addScore} />
       <ScoreList scores={scores} />
       <Metrics scores={scores} />
